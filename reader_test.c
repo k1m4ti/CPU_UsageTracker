@@ -11,7 +11,7 @@ static void cleanUpThread(void *arg)
         fclose(queue->file);
 }
 
-void getDataFromProc(void *arg)
+static void getDataFromProc(void *arg)
 {
     int result;
     Queue *queue = (Queue *)arg;

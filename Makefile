@@ -17,7 +17,7 @@ FUNCTIONS_TEST = functions_test
 READER_TEST = reader_test
 ANALYZER_TEST = analyzer_test
 PRINTER_TEST = printer_test
-WATCHDOG_TEST = watchdog_tes
+WATCHDOG_TEST = watchdog_test
 LOGGER_TEST = logger_test
 
 MAIN = main
@@ -104,7 +104,7 @@ $(EXEC): $(MAIN_O) $(STAT_LIB)
 
 #running the program
 test: $(EXEC_TEST)
-	./$(EXEC_TEST)
+	valgrind ./$(EXEC_TEST)
 
 run: $(EXEC)
 	./$(EXEC)

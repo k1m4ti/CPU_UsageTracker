@@ -3,7 +3,7 @@
 
 // #define DELAY
 
-void getDataFromReader(void *arg)
+static void getDataFromReader(void *arg)
 {
     Queue *queue = (Queue *)arg; // rzutowanie
     assert(queue == arg);
@@ -21,7 +21,7 @@ void getDataFromReader(void *arg)
     }
 }
 
-void sendDataToPrinter(void *arg)
+static void sendDataToPrinter(void *arg)
 {
     Queue *queue = (Queue *)arg;
     assert(queue == arg);
