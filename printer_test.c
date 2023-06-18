@@ -1,11 +1,11 @@
 #include "functions.h"
 #include <assert.h>
 
-//#define DELAY
+// #define DELAY
 
 void *printer(void *arg)
 {
-    Queue *queue = (Queue *)arg; 
+    Queue *queue = (Queue *)arg;
     assert(queue == arg);
 
     printf("\n\033[34m========\033[35m CPU Usage \033[34m========\033[0m\n");
@@ -16,22 +16,22 @@ void *printer(void *arg)
         queue->lastActivity[2] = time(NULL); // send current time to watchdog
         assert(pthread_mutex_unlock(&queue->mutex[2]) == 0);
 
-        //simulate unresponsive
-        #ifdef DELAY
-            sleep(4);
-        #endif  
+// simulate unresponsive
+#ifdef DELAY
+        sleep(4);
+#endif
 
+        assert(pthread_mutex_lock(&queue->mutex[5]) == 0);
         for (unsigned i = 0; i < queue->cores; i++)
         {
-            assert (sem_wait(&queue->semaphore[3]) == 0);
-           
+            assert(sem_wait(&queue->semaphore[3]) == 0);
+
             queue->CPU_Usage[i] = queue->CPU_Percentage[i]; // get data from analyzer
-            
-            assert (sem_post(&queue->semaphore[2]) == 0);
-          
+
+            assert(sem_post(&queue->semaphore[2]) == 0);
         }
-        
-        
+        assert(pthread_mutex_unlock(&queue->mutex[5]) == 0);
+
         for (unsigned i = 0; i < queue->cores; i++)
         {
             if (i == 0)
@@ -42,7 +42,6 @@ void *printer(void *arg)
 
         printf("\033[34m============================\033[0m\033[%dA\033[28D", queue->cores + 1);
     }
-    
 
     return NULL;
 }

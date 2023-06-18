@@ -1,14 +1,14 @@
 #include "functions.h"
 #include <assert.h>
 
-//#define DELAY
+// #define DELAY
 
 static void cleanUpThread(void *arg)
 {
-    Queue *queue = (Queue *) arg;
+    Queue *queue = (Queue *)arg;
     assert(queue == arg);
-    if(queue->isFileOpen)
-        fclose(queue->file);   
+    if (queue->isFileOpen)
+        fclose(queue->file);
 }
 
 void getDataFromProc(void *arg)
@@ -33,7 +33,6 @@ void getDataFromProc(void *arg)
 
         assert(result != -1);
 
-        
         assert(sem_post(&queue->semaphore[1]) == 0);
     }
 
@@ -48,19 +47,20 @@ void *reader(void *arg)
 
     queue->insert = 0; // set buffer intex
 
-    pthread_cleanup_push(cleanUpThread, queue)
-    while (1)
+    pthread_cleanup_push(cleanUpThread, queue) while (1)
     {
         assert(pthread_mutex_lock(&queue->mutex[0]) == 0);
         queue->lastActivity[0] = time(NULL); // send current time to watchdog
         assert(pthread_mutex_unlock(&queue->mutex[0]) == 0);
 
-        //simulate unresponsive
-        #ifdef DELAY
-            sleep(4);
-        #endif  
+// simulate unresponsive
+#ifdef DELAY
+        sleep(4);
+#endif
 
+        assert(pthread_mutex_lock(&queue->mutex[3]) == 0);
         getDataFromProc((void *)queue);
+        assert(pthread_mutex_unlock(&queue->mutex[3]) == 0);
 
         sleep(1); // sleep for next measure
 

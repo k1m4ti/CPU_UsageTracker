@@ -28,7 +28,7 @@ typedef struct
 {
     Data *data;
     Count *count;
-    FILE *file;
+    FILE *file, *log;
     sem_t *semaphore;
     pthread_mutex_t *mutex;
     time_t *lastActivity;
@@ -52,5 +52,7 @@ void *analyzer(void *arg);
 void *printer(void *arg);
 
 void *watchdog(void *arg);
+
+void *logger(void *arg);
 
 #endif

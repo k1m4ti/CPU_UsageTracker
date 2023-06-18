@@ -5,29 +5,30 @@
 #include "functions.h"
 
 static Queue *queue;
-static pthread_t readerThread, analyzerThread, printerThread, watchdogThread, loggerThread; 
+static pthread_t readerThread, analyzerThread, printerThread, watchdogThread, loggerThread;
 
 static void cleanUp(void)
 {
-    //unlock mutexes
-    for(int i = 0; i < 6; i ++)
+    // unlock mutexes
+    for (int i = 0; i < 6; i++)
         assert(pthread_mutex_unlock(&queue->mutex[i]) == 0);
-    
 
-    //exit threads
+    // exit threads
     assert(pthread_cancel(readerThread) == 0);
     assert(pthread_cancel(analyzerThread) == 0);
     assert(pthread_cancel(printerThread) == 0);
+    assert(pthread_cancel(loggerThread) == 0);
 
     if (!queue->noRespond)
     {
         assert(pthread_cancel(watchdogThread) == 0);
     }
 
-    //wait for threads
+    // wait for threads
     assert(pthread_join(readerThread, NULL) == 0);
     assert(pthread_join(analyzerThread, NULL) == 0);
     assert(pthread_join(printerThread, NULL) == 0);
+    assert(pthread_join(loggerThread, NULL) == 0);
 
     if (!queue->noRespond)
     {
@@ -67,31 +68,34 @@ int main(void)
 
     queue->cores = cores; // assigning the number of cores to a variable in the queue
 
-    //initate the semaphores
+    // initate the semaphores
     assert(sem_init(&queue->semaphore[0], 0, 2) == 0);
     assert(sem_init(&queue->semaphore[1], 0, 0) == 0);
     assert(sem_init(&queue->semaphore[2], 0, 1) == 0);
     assert(sem_init(&queue->semaphore[3], 0, 0) == 0);
 
-    //initiate the mutexes
-    for(int i = 0; i < 6; i ++)
+    // initiate the mutexes
+    for (int i = 0; i < 6; i++)
         assert(pthread_mutex_init(&queue->mutex[i], NULL) == 0);
 
     // create threads
     assert(pthread_create(&readerThread, NULL, reader, (void *)queue) == 0);
     assert(pthread_create(&analyzerThread, NULL, analyzer, (void *)queue) == 0);
     assert(pthread_create(&printerThread, NULL, printer, (void *)queue) == 0);
+    assert(pthread_create(&watchdogThread, NULL, watchdog, (void *)queue) == 0);
+    assert(pthread_create(&loggerThread, NULL, logger, (void *)queue) == 0);
 
     // wait for threads
     assert(pthread_join(watchdogThread, NULL) == 0);
-    if (queue->noRespond)   // if watchdog exit program
+    if (queue->noRespond) // if watchdog exit program
     {
         exit(EXIT_FAILURE);
     }
-    
+
     assert(pthread_join(readerThread, NULL) == 0);
     assert(pthread_join(analyzerThread, NULL) == 0);
     assert(pthread_join(printerThread, NULL) == 0);
+    assert(pthread_join(loggerThread, NULL) == 0);
 
     return 0;
 }
