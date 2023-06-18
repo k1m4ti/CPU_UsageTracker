@@ -1,6 +1,8 @@
 #include "functions.h"
 #include <assert.h>
 
+//#define DELAY
+
 void *printer(void *arg)
 {
     Queue *queue = (Queue *)arg; 
@@ -10,6 +12,14 @@ void *printer(void *arg)
 
     while (1)
     {
+        assert(pthread_mutex_lock(&queue->mutex[2]) == 0);
+        queue->lastActivity[2] = time(NULL); // send current time to watchdog
+        assert(pthread_mutex_unlock(&queue->mutex[2]) == 0);
+
+        //simulate unresponsive
+        #ifdef DELAY
+            sleep(4);
+        #endif  
 
         for (unsigned i = 0; i < queue->cores; i++)
         {

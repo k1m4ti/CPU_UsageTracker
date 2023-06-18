@@ -9,17 +9,32 @@ static pthread_t readerThread, analyzerThread, printerThread, watchdogThread, lo
 
 static void cleanUp(void)
 {
-    freeQueue((void *)queue);
+    //unlock mutexes
+    for(int i = 0; i < 6; i ++)
+        assert(pthread_mutex_unlock(&queue->mutex[i]) == 0);
+    
 
     //exit threads
     assert(pthread_cancel(readerThread) == 0);
     assert(pthread_cancel(analyzerThread) == 0);
     assert(pthread_cancel(printerThread) == 0);
 
+    if (!queue->noRespond)
+    {
+        assert(pthread_cancel(watchdogThread) == 0);
+    }
+
     //wait for threads
     assert(pthread_join(readerThread, NULL) == 0);
     assert(pthread_join(analyzerThread, NULL) == 0);
     assert(pthread_join(printerThread, NULL) == 0);
+
+    if (!queue->noRespond)
+    {
+        assert(pthread_join(watchdogThread, NULL) == 0);
+    }
+
+    freeQueue((void *)queue);
 }
 
 static void term(int signum)
@@ -52,12 +67,15 @@ int main(void)
 
     queue->cores = cores; // assigning the number of cores to a variable in the queue
 
-    //initation the semaphores
+    //initate the semaphores
     assert(sem_init(&queue->semaphore[0], 0, 2) == 0);
     assert(sem_init(&queue->semaphore[1], 0, 0) == 0);
     assert(sem_init(&queue->semaphore[2], 0, 1) == 0);
     assert(sem_init(&queue->semaphore[3], 0, 0) == 0);
 
+    //initiate the mutexes
+    for(int i = 0; i < 6; i ++)
+        assert(pthread_mutex_init(&queue->mutex[i], NULL) == 0);
 
     // create threads
     assert(pthread_create(&readerThread, NULL, reader, (void *)queue) == 0);
@@ -65,6 +83,12 @@ int main(void)
     assert(pthread_create(&printerThread, NULL, printer, (void *)queue) == 0);
 
     // wait for threads
+    assert(pthread_join(watchdogThread, NULL) == 0);
+    if (queue->noRespond)   // if watchdog exit program
+    {
+        exit(EXIT_FAILURE);
+    }
+    
     assert(pthread_join(readerThread, NULL) == 0);
     assert(pthread_join(analyzerThread, NULL) == 0);
     assert(pthread_join(printerThread, NULL) == 0);

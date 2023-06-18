@@ -1,6 +1,8 @@
 #include "functions.h"
 #include <assert.h>
 
+//#define DELAY
+
 void getDataFromReader(void *arg)
 {
     Queue *queue = (Queue *)arg; // rzutowanie
@@ -52,6 +54,14 @@ void *analyzer(void *arg)
     
     while (1)
     {
+        assert(pthread_mutex_lock(&queue->mutex[1]) == 0);
+        queue->lastActivity[1] = time(NULL); // send current time to watchdog
+        assert(pthread_mutex_unlock(&queue->mutex[1]) == 0);
+
+        //simulate unresponsive
+        #ifdef DELAY
+            sleep(4);
+        #endif  
 
         getDataFromReader((void *)queue);
 

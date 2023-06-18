@@ -51,4 +51,6 @@ void *analyzer(void *arg);
 
 void *printer(void *arg);
 
+void *watchdog(void *arg);
+
 #endif

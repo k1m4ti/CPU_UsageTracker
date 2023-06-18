@@ -1,6 +1,8 @@
 #include "functions.h"
 #include <assert.h>
 
+//#define DELAY
+
 static void cleanUpThread(void *arg)
 {
     Queue *queue = (Queue *) arg;
@@ -49,6 +51,15 @@ void *reader(void *arg)
     pthread_cleanup_push(cleanUpThread, queue)
     while (1)
     {
+        assert(pthread_mutex_lock(&queue->mutex[0]) == 0);
+        queue->lastActivity[0] = time(NULL); // send current time to watchdog
+        assert(pthread_mutex_unlock(&queue->mutex[0]) == 0);
+
+        //simulate unresponsive
+        #ifdef DELAY
+            sleep(4);
+        #endif  
+
         getDataFromProc((void *)queue);
 
         sleep(1); // sleep for next measure
