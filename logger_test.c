@@ -12,7 +12,7 @@ static void cleanUpThread(void *arg)
     fclose(queue->log);
 }
 
-void writeReaderData(void *arg)
+static void writeReaderData(void *arg)
 {
     Queue *queue = (Queue *)arg;
     assert(queue == arg);
@@ -32,7 +32,7 @@ void writeReaderData(void *arg)
     }
 }
 
-void writeAnalyzerData(void *arg)
+static void writeAnalyzerData(void *arg)
 {
     Queue *queue = (Queue *)arg;
     assert(queue == arg);
@@ -46,7 +46,7 @@ void writeAnalyzerData(void *arg)
     }
 }
 
-void writePrinterData(void *arg)
+static void writePrinterData(void *arg)
 {
     Queue *queue = (Queue *)arg;
     assert(queue == arg);
