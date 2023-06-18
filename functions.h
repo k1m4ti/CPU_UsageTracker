@@ -9,6 +9,8 @@
 #include <pthread.h>
 #include <time.h>
 
+#define CHANGE_INDEX(index) (index) = ((index + 1) % 2)
+
 //struct for storeage data from file 
 typedef struct 
 {
@@ -40,7 +42,9 @@ typedef struct
 //function to allocate memory for queue
 void *allocateQueue(unsigned cores);
 
-//funtcion to free memory
+//function to free memory
 void freeQueue(void *arg);
+
+void *reader(void *arg);
 
 #endif
