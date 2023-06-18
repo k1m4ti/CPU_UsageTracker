@@ -4,11 +4,22 @@
 
 #include "functions.h"
 
-static Queue *queue; // declarate queue
+static Queue *queue;
+static pthread_t readerThread, analyzerThread, printerThread, watchdogThread, loggerThread; 
 
 static void cleanUp(void)
 {
     freeQueue((void *)queue);
+
+    //exit threads
+    assert(pthread_cancel(readerThread) == 0);
+    assert(pthread_cancel(analyzerThread) == 0);
+    assert(pthread_cancel(printerThread) == 0);
+
+    //wait for threads
+    assert(pthread_join(readerThread, NULL) == 0);
+    assert(pthread_join(analyzerThread, NULL) == 0);
+    assert(pthread_join(printerThread, NULL) == 0);
 }
 
 static void term(int signum)
@@ -40,6 +51,23 @@ int main(void)
     queue->signal = false; // set false value waiting for signal
 
     queue->cores = cores; // assigning the number of cores to a variable in the queue
+
+    //initation the semaphores
+    assert(sem_init(&queue->semaphore[0], 0, 2) == 0);
+    assert(sem_init(&queue->semaphore[1], 0, 0) == 0);
+    assert(sem_init(&queue->semaphore[2], 0, 1) == 0);
+    assert(sem_init(&queue->semaphore[3], 0, 0) == 0);
+
+
+    // create threads
+    assert(pthread_create(&readerThread, NULL, reader, (void *)queue) == 0);
+    assert(pthread_create(&analyzerThread, NULL, analyzer, (void *)queue) == 0);
+    assert(pthread_create(&printerThread, NULL, printer, (void *)queue) == 0);
+
+    // wait for threads
+    assert(pthread_join(readerThread, NULL) == 0);
+    assert(pthread_join(analyzerThread, NULL) == 0);
+    assert(pthread_join(printerThread, NULL) == 0);
 
     return 0;
 }

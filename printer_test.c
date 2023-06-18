@@ -13,16 +13,13 @@ void *printer(void *arg)
 
         for (unsigned i = 0; i < queue->cores; i++)
         {
-            // opusc semafor D
+            assert (sem_wait(&queue->semaphore[3]) == 0);
            
-            
             queue->CPU_Usage[i] = queue->CPU_Percentage[i]; // get data from analyzer
             
-
-            // podnies semafor C
+            assert (sem_post(&queue->semaphore[2]) == 0);
           
         }
-        assert(pthread_mutex_unlock(&queue->mutex[5]) == 0);
         
         
         for (unsigned i = 0; i < queue->cores; i++)

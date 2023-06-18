@@ -8,7 +8,7 @@ void getDataFromReader(void *arg)
 
     for (unsigned i = 0; i < queue->cores; i++)
     {
-        // opusc semafor B
+        assert(sem_wait(&queue->semaphore[1]) == 0);
         
         queue->count[queue->extract].idle[i] = queue->data[queue->extract].idle[i] + queue->data[queue->extract].iowait[i];
 
@@ -17,27 +17,27 @@ void getDataFromReader(void *arg)
                                                   queue->data[queue->extract].irq[i] + queue->data[queue->extract].softirq[i] + queue->data[queue->extract].steal[i];
 
                                                
-        // ponies semafor A
+        assert(sem_post(&queue->semaphore[0]) == 0);
         
     }
 }
 
 void sendDataToPrinter(void *arg)
 {
-    Queue *queue = (Queue *)arg; // rzutowanie
+    Queue *queue = (Queue *)arg; 
     assert(queue == arg);
 
     for (unsigned i = 0; i < queue->cores; i++)
     {
-        // opusc semafor C
+        assert(sem_wait(&queue->semaphore[2]) == 0);
         
         
-        // oblicz procent
+        // count percent
         queue->CPU_Percentage[i] = 1.0 - (double)(queue->count[1].idle[i] - queue->count[0].idle[i]) / (double)(queue->count[1].idle[i] - queue->count[0].idle[i] +
                                 queue->count[1].nonIdle[i] - queue->count[0].nonIdle[i]);
 
 
-        // podnies semafor D
+        assert(sem_post(&queue->semaphore[3]) == 0);
         
     }
 }
@@ -56,7 +56,7 @@ void *analyzer(void *arg)
         getDataFromReader((void *)queue);
 
         
-        // if counted send to printer
+        // counted send to printer
         if (queue->extract == 1)
             sendDataToPrinter((void *)queue);
 
