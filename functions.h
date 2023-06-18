@@ -47,4 +47,6 @@ void freeQueue(void *arg);
 
 void *reader(void *arg);
 
+void *analyzer(void *arg);
+
 #endif
