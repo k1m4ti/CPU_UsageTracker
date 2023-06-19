@@ -1,0 +1,37 @@
+================================================================================================
+Created by Mateusz Glab 19/06/23
+CPU USAGE TRACKER
+================================================================================================
+This is a simple console application for tracking CPU usage. It consists of multiple threads
+working together to read CPU informations, calcpulate CPU usage, print the average CPU usage,
+and ensure program responsiveness. It includes a logger thread to save messages to "log.txt".
+
+(1) Reader thread reads the /proc/stat file and send the extracted CPU usage data to the 
+    analyzer thread.
+
+(2) Analyzer thread processes the received data and calculates the CPU usage for each CPU core.
+    It sends the processed data (CPU usage for each core) to the Printer thread.
+
+(3) Printer thread prints the average CPU usage (expressed in percentage) on the screen, once 
+    per second.
+
+(4) Watchdog thread monitors the activity of other threads. If no information is received for 
+    2 seconds, it terminates the program with an appropriate error message.
+
+(5) Logger thread accepts messages from all threads and saves them to a file. The logger is used 
+    to write synchronized debug prints to the file.
+================================================================================================
+To run program:
+-> make run 
+
+To make test:
+-> make test
+
+To clean directory:
+-> make clean
+
+To terminate program:
+-> kill -SIGTERM <pid>
+-> kill -SIGINT <pid>
+-> ^C
+================================================================================================

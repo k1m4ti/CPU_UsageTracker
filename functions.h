@@ -39,10 +39,8 @@ typedef struct
 }Queue;
 #pragma pack(pop)
 
-//function to allocate memory for queue
 void *allocateQueue(unsigned cores);
 
-//function to free memory
 void freeQueue(void *arg);
 
 void *reader(void *arg);

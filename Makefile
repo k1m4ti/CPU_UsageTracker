@@ -18,6 +18,7 @@ PRINTER = printer
 ANALYZER = analyzer
 WATCHDOG = watchdog
 MAIN = main
+LOGGER = logger
 
 TEST_MAIN = main_test
 TEST_FUNCTIONS = functions_test
@@ -39,6 +40,7 @@ READER_O = $(READER).o
 ANALYZER_O = $(ANALYZER).o
 PRINTER_O = $(PRINTER).o
 WATCHDOG_O = $(WATCHDOG).o
+LOGGER_O = $(LOGGER).o
 
 TEST_FUNCTIONS_O = $(TEST_FUNCTIONS).o
 TEST_MAIN_O = $(TEST_MAIN).o
@@ -63,7 +65,7 @@ LIB_STAT = lib$(LIB_NAME).a
 TEST_LIB_STAT = lib$(TEST_LIB_NAME).a
 
 #compiled files for libraries
-LIB_OBJS = $(FUNCTIONS_O) $(READER_O) $(ANALYZER_O) $(PRINTER_O) $(WATCHDOG_O)
+LIB_OBJS = $(FUNCTIONS_O) $(READER_O) $(ANALYZER_O) $(PRINTER_O) $(WATCHDOG_O) $(LOGGER_O)
 TEST_LIB_OBJS = $(TEST_FUNCTIONS_O) $(TEST_READER_O) $(TEST_ANALYZER_O) $(TEST_PRINTER_O) $(TEST_WATCHDOG_O) $(TEST_LOGGER_O)
 
 #static library archiver for creating libraries
@@ -112,4 +114,3 @@ test: $(EXEC2)
 #cleaning directory
 clean:                                                     
 	rm -f *.o  *~ *.a *.so *.x *h.gch core core* a.out; rm -rf ${LIB_DIR}
-	
