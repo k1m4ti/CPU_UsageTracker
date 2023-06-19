@@ -104,7 +104,7 @@ $(EXEC2): $(TEST_MAIN_O) $(TEST_LIB_STAT)
 
 # running program
 run: $(EXEC1)
-	#./$(EXEC1)
+	./$(EXEC1)
 
 test: $(EXEC2)
 	valgrind ./$(EXEC2)
