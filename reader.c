@@ -45,7 +45,7 @@ static void getDataFromProc(void *arg)
                         &queue->data[queue->insert].idle[i], &queue->data[queue->insert].iowait[i], &queue->data[queue->insert].irq[i], &queue->data[queue->insert].softirq[i],
                         &queue->data[queue->insert].steal[i]);
 
-        if (result != -1)
+        if (result == -1)
         {
             fprintf(stderr, "Fscanf error\n");
             pthread_exit(NULL);
