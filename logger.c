@@ -65,7 +65,6 @@ static void writePrinterData(void *arg)
 void *logger(void *arg)
 {
     Queue *queue = (Queue *)arg;
-    assert(queue == arg);
 
     pthread_cleanup_push(cleanUpThread, queue)
 
